@@ -41,8 +41,6 @@ def presumably(basesToSend, measures, longueur):
 
 
 
-
-
 def revealFromBob(listBobKey):
     # Bob reveals random bits to Alice, function to select and return those bits
     bobReveal = []
@@ -61,6 +59,3 @@ def getFinalKey(listBobKey,bobReveal, bobIndex):
         finalKey.pop(bobReveal[bobIndex[i]])
 
     return finalKey
-
-
-    
