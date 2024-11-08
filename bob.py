@@ -66,7 +66,7 @@ def getFinalKey(listBobKey, bobReveal, bobIndex, diff):
     return finalKey
 
 
-def mapForPandasAlice() : 
+def mapForPandasBob() : 
     basesMapped = []
 
     for base in bobBasesStored:
@@ -75,7 +75,7 @@ def mapForPandasAlice() :
         else:
             basesMapped.append('X')
 
-    data = {'Alice Bases': basesMapped, 'Alice Bits': bobMeasuresStored}
+    data = {'Bob Bases': basesMapped, 'Bob Bits': bobMeasuresStored}
     df = pd.DataFrame(data)
     print(df)
     return df
