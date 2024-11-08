@@ -47,8 +47,8 @@ def revealFromBob(listBobKey):
     bobReveal = []
     bobIndex = []
     for i in range(int(len(listBobKey)/10)):
-        bobReveal.append(listBobKey[i])
-        bobIndex.append(i)
+        bobReveal.append(listBobKey[i*10])
+        bobIndex.append(i*10)
 
     return bobReveal, bobIndex
 
