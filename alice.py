@@ -11,6 +11,10 @@ def alice(size, print=True):
     global basesstorage
     basesstorage = randomBases.copy()
 
+    global bitStorage
+    bitStorage = randomBits.copy()
+    
+
     circuits = []
 
     for i in range(size):
@@ -44,4 +48,39 @@ def checkBases(bob_bases):
             output.append(True)
         else:
             output.append(False)
+
+    makeSiftedKey(output, basesstorage)
     return output
+
+
+
+
+def makeSiftedKey(goodindexes, basesstorage):
+    global siftedKey
+    siftedKey = []
+    for i in range(len(goodindexes)):
+        if goodindexes[i]:
+            siftedKey.append(bitStorage[i])
+
+    return siftedKey
+
+
+
+def checkSpy(bobBits, bobBitIndex):
+    diff = 0
+    for index in bobBitIndex:
+        if bobBits[index] != siftedKey[index]:
+            diff += 1
+    print(f"Diff: {diff}")
+    if diff > 125:
+        print("Spy detected")
+        siftedKey.clear()
+        basesstorage.clear()
+        bitStorage.clear()
+    else:
+        print("No spy detected")
+        #remove shared bits from sifted key
+        for index in bobBitIndex:
+            siftedKey.pop(index)
+
+    return diff
