@@ -12,8 +12,9 @@ def alice(size, print=True):
     circuits = []
 
     for i in range(size):
-        q = QuantumRegister(1, 'q')
-        circuit = QuantumCircuit(q)
+        q = QuantumRegister(1)
+        c = ClassicalRegister(1)
+        circuit = QuantumCircuit(q,c)
         
         if randomBits[i] == 1:
             circuit.x(q[0])
