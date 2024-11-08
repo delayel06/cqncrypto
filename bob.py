@@ -61,6 +61,6 @@ def getFinalKey(listBobKey,bobReveal, bobIndex):
     if diff==0:
         for index in bobIndex:
 
-            finalKey.pop(bobIndex[index])
+            finalKey.pop(index)
 
     return finalKey
