@@ -2,9 +2,6 @@ from qiskit import QuantumCircuit, primitives, quantum_info
 import random
 import alice
 
-longueur=1000
-recv=alice.alice(longueur, False)
-
 
 def  bob(recv, longueur):
 # bobBases is a list of random bits that Bob uses to measure the qubits sent by Alice
@@ -27,7 +24,6 @@ def  bob(recv, longueur):
     return bobBases, bobMeasures
 
 
-basesToSend, measures = bob(recv, longueur) # Ecrire dans alice.py
 
 def presumably(basesToSend, measures, longueur):
     basesCorrected= alice.checkBases(basesToSend) 
@@ -52,15 +48,14 @@ def revealFromBob(listBobKey):
     return bobReveal, bobIndex
 
 
-def getFinalKey(listBobKey,bobReveal, bobIndex):
-    # Alice gets the final key by selecting the bits that Bob has revealed
+def getFinalKey(listBobKey, bobReveal, bobIndex, diff):
     global finalKey
     finalKey = listBobKey.copy()
 
-    diff= alice.checkSpy(bobReveal, bobIndex)
-    if diff==0:
-        for index in bobIndex:
-
-            finalKey.pop(index)
+    if diff == 0:
+        
+        for index in sorted(bobIndex, reverse=True):
+            if index < len(finalKey):
+                finalKey.pop(index)
 
     return finalKey

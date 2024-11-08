@@ -68,9 +68,10 @@ def makeSiftedKey(goodindexes):
 
 def checkSpy(bobBits, bobBitIndex):
     diff = 0
-    for index in bobBitIndex:
-        if bobBits[index] != siftedKey[index]:
-            diff += 1
+    for i, index in enumerate(bobBitIndex):
+        if index < len(siftedKey) and i < len(bobBits):
+            if bobBits[i] != siftedKey[index]:
+                diff += 1
     print(f"Diff: {diff}")
     if diff > 0:
         print("Spy detected")
@@ -79,10 +80,10 @@ def checkSpy(bobBits, bobBitIndex):
         bitStorage.clear()
     else:
         print("No spy detected")
-        #remove shared bits from sifted key
-        for index in bobBitIndex:
-            global AliceFinalKey
-            AliceFinalKey = siftedKey.copy()
-            AliceFinalKey.pop(index)
-
+        # Create a copy of siftedKey
+        global AliceFinalKey
+        AliceFinalKey = siftedKey.copy()
+        for index in sorted(bobBitIndex, reverse=True):
+            if index < len(AliceFinalKey):
+                AliceFinalKey.pop(index)
     return diff
