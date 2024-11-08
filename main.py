@@ -3,7 +3,7 @@ import alice
 import bob
 import eve
 
-longueur=1000
+longueur=50
 recv=alice.alice(longueur, False)
 basesToSend, measures = bob.bob(recv, longueur)
 
@@ -15,3 +15,9 @@ diff = alice.checkSpy(bobReveal, bobIndex)
 print(diff)
 
 bobfinalkey = bob.getFinalKey(listbobkey, bobReveal, bobIndex)
+
+print(bobfinalkey)
+print(alice.AliceFinalKey)
+
+
+print(bobfinalkey == alice.AliceFinalKey)

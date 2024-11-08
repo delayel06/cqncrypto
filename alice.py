@@ -49,7 +49,7 @@ def checkBases(bob_bases):
         else:
             output.append(False)
 
-    makeSiftedKey(output, basesstorage)
+    makeSiftedKey(output)
     return output
 
 
