@@ -47,9 +47,9 @@ def revealFromBob(listBobKey):
     # Bob reveals random bits to Alice, function to select and return those bits
     bobReveal = []
     bobIndex = []
-    for i in range(int(len(listBobKey)/10)):
-        bobReveal.append(listBobKey[i*10])
-        bobIndex.append(i*10)
+    for i in range(int(len(listBobKey)/5)):
+        bobReveal.append(listBobKey[i*5])
+        bobIndex.append(i*5)
 
     return bobReveal, bobIndex
 
@@ -82,7 +82,6 @@ def mapForPandasBob() :
 
 
 def PandasBobSentBits(bits, indexofbits):
-
     output = []
 
     for i in range(1000): 

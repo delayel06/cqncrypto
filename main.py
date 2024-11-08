@@ -30,6 +30,7 @@ def checkBasesDataframe(basesofBob):
 if __name__ == "__main__":
     success = 0
     mistake = 0
+    plot_error_rate = []
     for i in range(10):
         longueur=1000
         flag = sys.argv[1]
@@ -84,6 +85,16 @@ if __name__ == "__main__":
             success += 1
         else:
             mistake +=1
+            error_rate = 0
+            for i in range(bobfinalkey):
+                if bobfinalkey[i] != alice.AliceFinalKey[i]:
+                    error_rate += 1
+            error_rate = error_rate / len(bobfinalkey)
+    #Line graph or error rate over time
+    # 
+    plot_error_rate.append(error_rate)
+    pyplot.plot(plot_error_rate)
+
 
     # Plot histogram of the success rate, and the mistake rate
     x = ['Success', 'Mistake']
