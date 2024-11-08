@@ -1,7 +1,7 @@
 from qiskit import QuantumCircuit, primitives, quantum_info
 import random
 import alice
-
+import pandas as pd
 
 def  bob(recv, longueur):
 # bobBases is a list of random bits that Bob uses to measure the qubits sent by Alice
@@ -9,6 +9,8 @@ def  bob(recv, longueur):
     for i in range(longueur):
         bobBases[i]=random.randint(0,1)
 
+    global bobBasesStored
+    bobBasesStored = bobBases.copy()
     # bobBases[i] = 0 est équivalent à base Z
     # bobBases[i] = 1 est équivalent à base X
     bobMeasures = [None]*longueur
@@ -20,6 +22,9 @@ def  bob(recv, longueur):
         qc.measure(0,0)
         bobMeasures[i]=str(primitives.StatevectorSampler().run([qc], shots=1).result()[0].data.c.get_counts().keys())
         bobMeasures[i]=int(bobMeasures[i][12])
+
+    global bobMeasuresStored
+    bobMeasuresStored = bobMeasures.copy()
 
     return bobBases, bobMeasures
 
@@ -59,3 +64,18 @@ def getFinalKey(listBobKey, bobReveal, bobIndex, diff):
                 finalKey.pop(index)
 
     return finalKey
+
+
+def mapForPandasAlice() : 
+    basesMapped = []
+
+    for base in bobBasesStored:
+        if base == 0:
+            basesMapped.append('Z')
+        else:
+            basesMapped.append('X')
+
+    data = {'Alice Bases': basesMapped, 'Alice Bits': bobMeasuresStored}
+    df = pd.DataFrame(data)
+    print(df)
+    return df
