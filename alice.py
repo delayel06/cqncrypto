@@ -74,7 +74,7 @@ def checkSpy(bobBits, bobBitIndex):
                 diff += 1
     print(f"Diff: {diff}")
     if diff > 0:
-        print("Spy detected")
+        print("Spy detected ! ")
         siftedKey.clear()
         basesstorage.clear()
         bitStorage.clear()
