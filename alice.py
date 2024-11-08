@@ -11,9 +11,6 @@ def alice(size, print=True):
     global basesstorage
     basesstorage = randomBases.copy()
 
-    print(f"Random bits: {randomBits}")
-    print(f"Random bases: {randomBases}")
-
     circuits = []
 
     for i in range(size):
@@ -40,10 +37,11 @@ def alice(size, print=True):
 
 
 
-def checkbases(bob_bases):
+def checkBases(bob_bases):
     output = []
     for i in range(len(bob_bases)):
         if bob_bases[i] == basesstorage[i]:
             output.append(True)
         else:
             output.append(False)
+    return output
