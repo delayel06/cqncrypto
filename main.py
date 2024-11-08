@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 
 
+
 def checkBasesDataframe(basesofBob):
     global basesstorage
     basesstorage = []
@@ -26,7 +27,9 @@ def checkBasesDataframe(basesofBob):
 
 
 
-if __name__ == "__main__":
+
+
+def main(): 
     longueur=1000
     flag = sys.argv[1]
 
@@ -74,3 +77,27 @@ if __name__ == "__main__":
 
     print(dataframe3)
 
+    print(dataframe3.to_string(index=False))
+
+
+    return bobfinalkey == alice.AliceFinalKey
+
+
+
+if __name__ == "__main__":
+    
+    success = 0
+    fail = 0
+
+    out = [False] * 10
+    
+
+    for i in range(10) : 
+        out[i] = main()
+
+
+    for i in out : 
+        if i : 
+            success += 1
+        else : 
+            fail += 1
