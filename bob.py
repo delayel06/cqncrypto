@@ -2,6 +2,7 @@ from qiskit import QuantumCircuit, primitives, quantum_info
 import random
 import alice
 import pandas as pd
+import main
 
 def  bob(recv, longueur):
 # bobBases is a list of random bits that Bob uses to measure the qubits sent by Alice
@@ -31,7 +32,7 @@ def  bob(recv, longueur):
 
 
 def presumably(basesToSend, measures, longueur):
-    basesCorrected= alice.checkBases(basesToSend) 
+    basesCorrected= alice.checkBases(basesToSend)
     listBobKey=[]
     for i in range(longueur):
         if basesCorrected[i]==1:
@@ -75,7 +76,24 @@ def mapForPandasBob() :
         else:
             basesMapped.append('X')
 
-    data = {'Bob Bases': basesMapped, 'Bob Bits': bobMeasuresStored}
+    data = {'id': list(range(1, 1001)),'Bob Bases': basesMapped, 'Bob Bits': bobMeasuresStored}
     df = pd.DataFrame(data)
-    print(df)
     return df
+
+
+def PandasBobSentBits(bits, indexofbits):
+
+    output = []
+
+    for i in range(1000): 
+        if i in indexofbits:
+            output.append(bits[indexofbits.index(i)])
+        else:
+            output.append(' ')
+
+    data = {'id': list(range(1, 1001)), 'Bob Sent Bits': output}
+    df = pd.DataFrame(data)
+
+    return df
+
+    

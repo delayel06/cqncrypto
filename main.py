@@ -3,6 +3,28 @@ import alice
 import bob
 import eve
 import sys
+import pandas as pd
+
+
+def checkBasesDataframe(basesofBob):
+    global basesstorage
+    basesstorage = []
+
+    correctedBases = alice.checkBases(basesofBob)
+
+    for i in range(len(correctedBases)):
+        if correctedBases[i]:
+            basesstorage.append('/')
+        else:
+            basesstorage.append(' ')
+
+    
+    data = {'id': list(range(1, 1001)), 'Good bases': basesstorage}
+
+    
+
+    return pd.DataFrame(data)
+
 
 
 if __name__ == "__main__":
@@ -34,7 +56,29 @@ if __name__ == "__main__":
     
             print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
 
-        alicedataframe = alice.mapForPandasAlice()
+    
+
+#//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        alicedata = alice.mapForPandasAlice()
+        bobdata = bob.mapForPandasBob()
+
+        dataframe = pd.merge(alicedata, bobdata, on='id')
+
+
+        goodbasesdata = checkBasesDataframe(basesToSend)
+        dataframe2 = pd.merge(dataframe, goodbasesdata, on='id')
+
+        bitsrevealedmapped = bob.PandasBobSentBits(bobReveal, bobIndex)
+
+
+        dataframe3 = pd.merge(dataframe2, bitsrevealedmapped, on='id')
+
+
+        print(dataframe3)
+
+
         #If the final key is correct, we increment the success counter
         if bobfinalkey == alice.AliceFinalKey:
             success += 1

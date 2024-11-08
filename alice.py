@@ -99,7 +99,7 @@ def mapForPandasAlice() :
         else:
             basesMapped.append('X')
 
-    data = {'Alice Bases': basesMapped, 'Alice Bits': bitStorage}
+    data = {'id': list(range(1, 1001)), 'Alice Bases': basesMapped, 'Alice Bits': bitStorage}
     df = pd.DataFrame(data)
-    print(df)
     return df
+
