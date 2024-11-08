@@ -55,7 +55,7 @@ def checkBases(bob_bases):
 
 
 
-def makeSiftedKey(goodindexes, basesstorage):
+def makeSiftedKey(goodindexes):
     global siftedKey
     siftedKey = []
     for i in range(len(goodindexes)):
@@ -72,7 +72,7 @@ def checkSpy(bobBits, bobBitIndex):
         if bobBits[index] != siftedKey[index]:
             diff += 1
     print(f"Diff: {diff}")
-    if diff > 125:
+    if diff > 0:
         print("Spy detected")
         siftedKey.clear()
         basesstorage.clear()
@@ -81,6 +81,8 @@ def checkSpy(bobBits, bobBitIndex):
         print("No spy detected")
         #remove shared bits from sifted key
         for index in bobBitIndex:
-            siftedKey.pop(index)
+            global AliceFinalKey
+            AliceFinalKey = siftedKey.copy()
+            AliceFinalKey.pop(index)
 
     return diff
