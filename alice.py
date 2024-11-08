@@ -67,6 +67,9 @@ def makeSiftedKey(goodindexes):
 
 
 def checkSpy(bobBits, bobBitIndex):
+
+    global AliceFinalKey
+
     diff = 0
     for i, index in enumerate(bobBitIndex):
         if index < len(siftedKey) and i < len(bobBits):
@@ -74,14 +77,12 @@ def checkSpy(bobBits, bobBitIndex):
                 diff += 1
     print(f"Diff: {diff}")
     if diff > 0:
-        print("Spy detected ! ")
-        siftedKey.clear()
-        basesstorage.clear()
-        bitStorage.clear()
+        print("Spy detected ! ")    
+        
+        AliceFinalKey = 'NONIEFIBIAEUB'
     else:
         print("No spy detected")
-        # Create a copy of siftedKey
-        global AliceFinalKey
+        
         AliceFinalKey = siftedKey.copy()
         for index in sorted(bobBitIndex, reverse=True):
             if index < len(AliceFinalKey):
