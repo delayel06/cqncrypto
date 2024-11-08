@@ -23,7 +23,23 @@ def  bob(recv, longueur):
         qc.measure(0,0)
         bobMeasures[i]=str(primitives.StatevectorSampler().run([qc], shots=1).result()[0].data.c.get_counts().keys())
         print(bobMeasures[i])
-        #bobMeasures[i]=int(bobMeasures[i][12])
+        bobMeasures[i]=int(bobMeasures[i][12])
+
+    return bobBases, bobMeasures
 
 
-bob(recv)
+basesToSend, measures = bob(recv, longueur) # Ecrire dans alice.py
+
+def presumably ():
+    basesCorrected= alice.checkBases(basesToSend) 
+    listBobKey=[]
+    for i in range(longueur):
+        if basesCorrected[i]==1:
+            listBobKey.append(measures[i])
+
+    return listBobKey,len(listBobKey)
+
+
+
+
+
