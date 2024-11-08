@@ -29,7 +29,7 @@ def  bob(recv, longueur):
 
 basesToSend, measures = bob(recv, longueur) # Ecrire dans alice.py
 
-def presumably ():
+def presumably(basesToSend, measures, longueur):
     basesCorrected= alice.checkBases(basesToSend) 
     listBobKey=[]
     for i in range(longueur):
@@ -38,6 +38,3 @@ def presumably ():
 
     return listBobKey,len(listBobKey)
 
-
-
-print(presumably())
