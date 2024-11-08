@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 
 
+
 def checkBasesDataframe(basesofBob):
     global basesstorage
     basesstorage = []
@@ -35,70 +36,95 @@ if __name__ == "__main__":
         longueur=1000
         flag = sys.argv[1]
 
-        if flag == "eve":
-            alice_circuits = alice.alice(longueur, False)
-            recv = eve.attack_bb84(alice_circuits, longueur)
-        else:   
-            recv = alice.alice(longueur, False)
 
-        basesToSend, measures = bob.bob(recv, longueur)
+def main(): 
+    longueur=1000
+    flag = sys.argv[1]
 
-        listbobkey = bob.presumably(basesToSend, measures, longueur)
+    if flag == "eve":
+        alice_circuits = alice.alice(longueur, False)
+        recv = eve.attack_bb84(alice_circuits, longueur)
+    else:   
+        recv = alice.alice(longueur, False)
 
-        bobReveal, bobIndex = bob.revealFromBob(listbobkey)
+    basesToSend, measures = bob.bob(recv, longueur)
 
-        diff = alice.checkSpy(bobReveal, bobIndex)
+    listbobkey = bob.presumably(basesToSend, measures, longueur)
 
-        bobfinalkey = bob.getFinalKey(listbobkey, bobReveal, bobIndex, diff)
+    bobReveal, bobIndex = bob.revealFromBob(listbobkey)
 
-        if flag != "eve":
-            print(bobfinalkey)
-            print(alice.AliceFinalKey)
-    
-            print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
+    diff = alice.checkSpy(bobReveal, bobIndex)
 
-    
+    bobfinalkey = bob.getFinalKey(listbobkey, bobReveal, bobIndex, diff)
+
+    if flag != "eve":
+        print(bobfinalkey)
+        print(alice.AliceFinalKey)
+
+        print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
+
+
 
 #//////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        alicedata = alice.mapForPandasAlice()
-        bobdata = bob.mapForPandasBob()
+    alicedata = alice.mapForPandasAlice()
+    bobdata = bob.mapForPandasBob()
 
-        dataframe = pd.merge(alicedata, bobdata, on='id')
-
-
-        goodbasesdata = checkBasesDataframe(basesToSend)
-        dataframe2 = pd.merge(dataframe, goodbasesdata, on='id')
-
-        bitsrevealedmapped = bob.PandasBobSentBits(bobReveal, bobIndex)
+    dataframe = pd.merge(alicedata, bobdata, on='id')
 
 
-        dataframe3 = pd.merge(dataframe2, bitsrevealedmapped, on='id')
+    goodbasesdata = checkBasesDataframe(basesToSend)
+    dataframe2 = pd.merge(dataframe, goodbasesdata, on='id')
+
+    bitsrevealedmapped = bob.PandasBobSentBits(bobReveal, bobIndex)
 
 
-        print(dataframe3)
+    dataframe3 = pd.merge(dataframe2, bitsrevealedmapped, on='id')
 
 
-        #If the final key is correct, we increment the success counter
-        if bobfinalkey == alice.AliceFinalKey:
+    print(dataframe3)
+
+   
+    
+
+        #If the final key is correct, we increment the success counte
+        
+    return bobfinalkey ,alice.AliceFinalKey
+
+
+
+if __name__ == "__main__":
+    
+    success = 0
+    fail = 0
+
+    outBob = [False] * 10
+    outAlice = [False] * 10
+
+    for i in range(10) : 
+        outBob[i], outAlice[i] = main()
+
+
+    for i in outBob : 
+        error_rate = 0
+        if i : 
             success += 1
-        else:
-            mistake +=1
-            error_rate = 0
-            for i in range(bobfinalkey):
-                if bobfinalkey[i] != alice.AliceFinalKey[i]:
+        else : 
+            fail += 1
+            
+            for i in range(len(outBob)):
+                if outBob[i] != outAlice[i]:
                     error_rate += 1
-            error_rate = error_rate / len(bobfinalkey)
+        error_rate = float(error_rate) / float(len(outBob))
+        plot_error_rate.append(error_rate)
     #Line graph or error rate over time
     # 
-    plot_error_rate.append(error_rate)
+    
+    
     pyplot.plot(plot_error_rate)
-
-
-    # Plot histogram of the success rate, and the mistake rate
+     # Plot histogram of the success rate, and the mistake rate
     x = ['Success', 'Mistake']
-    y = [success, mistake]
-    pyplot.bar(x, y)
+    y = [success, fail]
+    #pyplot.bar(x, y)
     pyplot.show()
-
