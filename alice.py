@@ -1,6 +1,6 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 import random
-
+import pandas as pd
 
 
 def alice(size, print=True): 
@@ -87,3 +87,19 @@ def checkSpy(bobBits, bobBitIndex):
             if index < len(AliceFinalKey):
                 AliceFinalKey.pop(index)
     return diff
+
+
+
+def mapForPandasAlice() : 
+    basesMapped = []
+
+    for base in basesstorage:
+        if base == 0:
+            basesMapped.append('Z')
+        else:
+            basesMapped.append('X')
+
+    data = {'Alice Bases': basesMapped, 'Alice Bits': bitStorage}
+    df = pd.DataFrame(data)
+    print(df)
+    return df

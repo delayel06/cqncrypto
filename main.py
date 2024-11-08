@@ -27,7 +27,7 @@ if __name__ == "__main__":
     if flag != "eve":
         print(bobfinalkey)
         print(alice.AliceFinalKey)
-
-    
-
+   
         print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
+
+    alicedataframe = alice.mapForPandasAlice()
