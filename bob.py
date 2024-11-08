@@ -55,7 +55,9 @@ def revealFromBob(listBobKey):
 def getFinalKey(listBobKey,bobReveal, bobIndex):
     # Alice gets the final key by selecting the bits that Bob has revealed
     finalKey = []
-    for i in range(len(listBobKey)):
-        finalKey.pop(bobReveal[bobIndex[i]])
+    diff= alice.checkSpy(bobReveal, bobIndex)
+    if diff==0:
+        for i in range(len(listBobKey)):
+            finalKey.pop(bobReveal[bobIndex[i]])
 
     return finalKey
