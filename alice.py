@@ -2,12 +2,17 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 import random
 
 
-size = 100
 
 def alice(size, print=True): 
 
     randomBits = [random.randint(0, 1) for _ in range(size)]
     randomBases = [random.randint(0, 1) for _ in range(size)]
+
+    global basesstorage
+    basesstorage = randomBases.copy()
+
+    print(f"Random bits: {randomBits}")
+    print(f"Random bases: {randomBases}")
 
     circuits = []
 
@@ -34,3 +39,11 @@ def alice(size, print=True):
     return circuits
 
 
+
+def checkbases(bob_bases):
+    output = []
+    for i in range(len(bob_bases)):
+        if bob_bases[i] == basesstorage[i]:
+            output.append(True)
+        else:
+            output.append(False)
