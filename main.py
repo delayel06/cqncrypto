@@ -1,3 +1,4 @@
+from matplotlib import pyplot
 import alice
 import bob
 import eve
@@ -52,7 +53,7 @@ def main():
     if flag != "eve":
         print(bobfinalkey)
         print(alice.AliceFinalKey)
-   
+
         print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
 
 
@@ -77,9 +78,7 @@ def main():
 
     print(dataframe3)
 
-    print(dataframe3.to_string(index=False))
-
-
+   
     return bobfinalkey == alice.AliceFinalKey
 
 
@@ -101,3 +100,8 @@ if __name__ == "__main__":
             success += 1
         else : 
             fail += 1
+     # Plot histogram of the success rate, and the mistake rate
+    x = ['Success', 'Mistake']
+    y = [success, fail]
+    pyplot.bar(x, y)
+    pyplot.show()
