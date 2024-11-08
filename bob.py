@@ -36,5 +36,22 @@ def presumably(basesToSend, measures, longueur):
         if basesCorrected[i]==1:
             listBobKey.append(measures[i])
 
-    return listBobKey,len(listBobKey)
+    return listBobKey
 
+
+
+
+
+
+def revealFromBob(listBobKey):
+    # Bob reveals random bits to Alice, function to select and return those bits
+    bobReveal = []
+    bobIndex = []
+    for i in range(len(listBobKey)/10):
+        bobReveal.append(listBobKey[i])
+        bobIndex.append(i)
+
+    return bobReveal, bobIndex
+
+
+    
