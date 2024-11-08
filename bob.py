@@ -29,7 +29,7 @@ def  bob(recv, longueur):
 
 basesToSend, measures = bob(recv, longueur) # Ecrire dans alice.py
 
-def presumably ():
+def presumably():
     basesCorrected= alice.checkBases(basesToSend) 
     listBobKey=[]
     for i in range(longueur):
@@ -52,6 +52,15 @@ def revealFromBob(listBobKey):
         bobIndex.append(i)
 
     return bobReveal, bobIndex
+
+
+def getFinalKey(listBobKey,bobReveal, bobIndex):
+    # Alice gets the final key by selecting the bits that Bob has revealed
+    finalKey = []
+    for i in range(len(listBobKey)):
+        finalKey.pop(bobReveal[bobIndex[i]])
+
+    return finalKey
 
 
     
