@@ -58,11 +58,10 @@ def main():
     bobfinalkey = bob.getFinalKey(listbobkey, bobReveal, bobIndex, diff)
 
     if flag != "eve":
-        print(bobfinalkey)
-        print(alice.AliceFinalKey)
 
         print("Final key is correct : ", bobfinalkey == alice.AliceFinalKey)
-
+    print ((bobfinalkey))
+    print ((alice.AliceFinalKey))
 
 
 #//////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +82,7 @@ def main():
     dataframe3 = pd.merge(dataframe2, bitsrevealedmapped, on='id')
 
 
-    print(dataframe3)
+    #print(dataframe3)
 
    
     
@@ -106,17 +105,20 @@ if __name__ == "__main__":
         outBob[i], outAlice[i] = main()
 
 
-    for i in outBob : 
+    for i in range(len(outBob)) : 
         error_rate = 0
-        if i : 
+        if outBob[i]==outAlice[i] : 
             success += 1
         else : 
             fail += 1
             
-            for i in range(len(outBob)):
-                if outBob[i] != outAlice[i]:
+            for j in range(len(outBob[i])):
+                if outBob[i][j] != outAlice[i][j]:
                     error_rate += 1
-        error_rate = float(error_rate) / float(len(outBob))
+            print("Error numbers : ", error_rate)
+            print("Length of the key : ", len(outBob[i]))
+            error_rate =100* (float(error_rate)) / float(len(outBob[i]))
+            print("Error rate : ", error_rate)
         plot_error_rate.append(error_rate)
     #Line graph or error rate over time
     # 

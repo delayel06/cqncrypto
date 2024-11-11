@@ -79,7 +79,7 @@ def checkSpy(bobBits, bobBitIndex):
     if diff > 0:
         print("Spy detected ! ")    
         
-        AliceFinalKey = 'NONIEFIBIAEUB'
+        AliceFinalKey = siftedKey.copy()
     else:
         print("No spy detected")
         
