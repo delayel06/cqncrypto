@@ -115,10 +115,7 @@ if __name__ == "__main__":
             for j in range(len(outBob[i])):
                 if outBob[i][j] != outAlice[i][j]:
                     error_rate += 1
-            print("Error numbers : ", error_rate)
-            print("Length of the key : ", len(outBob[i]))
-            error_rate =100* (float(error_rate)) / float(len(outBob[i]))
-            print("Error rate : ", error_rate)
+            error_rate =100* (float(error_rate)) / float(len(outBob[i]))  
         plot_error_rate.append(error_rate)
     #Line graph or error rate over time
     # 
