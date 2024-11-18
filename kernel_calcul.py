@@ -2,11 +2,14 @@ from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
 from qiskit.quantum_info import Statevector
 import numpy as np
-import dataset as dt
+import dataset as dt as dt
 import qiskitML
 import matplotlib.pyplot as plt
 import kayakoBEME as kb
 import seaborn as sns
+from sklearn.svm import SVC
+
+def kernel_calcul():
 
 
 
@@ -31,8 +34,8 @@ def plug_V_layers(k,quantumCircuit, layers=1):
     return quantumCircuit
     
 
-N = len(dataset)
-kernel_matrix = np.zeros((N, N))
+    N = len(dataset)
+    kernel_matrix = np.zeros((N, N))
 
 simulator = AerSimulator()
 
@@ -60,15 +63,27 @@ for i in range(N):
         
         kernel_matrix[i, j] = prob_0
 
-# Draw the example circuit
+    # Draw the example circuit
 nv.draw(output='mpl')
 plt.show()
 
 print(dataset)
 
-plt.figure(figsize=(10, 8))
-sns.heatmap(kernel_matrix, annot=True, cmap='viridis')
-plt.title('Kernel Matrix Heatmap')
-plt.xlabel('Data Points')
-plt.ylabel('Data Points')
-plt.show()
+
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(kernel_matrix, annot=True, cmap='viridis')
+    plt.title('Kernel Matrix Heatmap')
+    plt.xlabel('Data Points')
+    plt.ylabel('Data Points')
+    plt.show()
+
+    points = [[x1, x2] for x1, x2, label in dataset]
+    labels = [label for x1, x2, label in dataset]
+
+    svc = SVC(kernel = "precomputed")
+    svc.fit(kernel_matrix, labels)
+    score = svc.score(kernel_matrix, labels)
+    print(f"Score : {score}")
+
+    return kernel_matrix, labels

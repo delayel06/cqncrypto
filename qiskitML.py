@@ -15,13 +15,20 @@ def U(point, thetas, qc):
     for j in range(5):
         
         qc.h(j)
+        #print ("added gate H on qubit", j)
 
         if pattern[j] == 0:
             qc.rz(x1,j)
+            #print("added gate Rz on qubit", j, "with angle", x1)
         else:
             qc.rz(x2,j)
+            #print("added gate Rz on qubit", j, "with angle", x2)
 
         qc.ry(thetas[j],j)
+        #print("added gate Ry on qubit", j, "with angle", thetas[j % 5])
+
+    qc.crz(thetas[5], 0,1)
+    qc.crz(thetas[6], 2,3)
 
     qc.crz(thetas[5], 0,1)
     qc.crz(thetas[6], 2,3)
@@ -31,6 +38,8 @@ def U(point, thetas, qc):
     
     qc.crz(thetas[9], 4,0)
     
+    qc.crz(thetas[j + 5], j-1, j)
+    #print("added gate crz on qubit", j, "controlled by qubit", j-1, "with angle", thetas[j + 5])
 
     return qc
 
