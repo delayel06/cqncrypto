@@ -10,33 +10,33 @@ dataset, _ = dataset.generate_circle_dataset_in_square(20)
 thetas = np.random.rand(10)
 
 # Define functions to plug U and V layers
-def plug_U_layers(quantumCircuit, layers=1):
-    for i in range(layers):
-        quantumCircuit = qiskitML.U(dataset[i], thetas, quantumCircuit)
+def plug_U_layers(k,quantumCircuit, layers=1):
+    point = dataset[k]
+    for _ in range(layers):
+        quantumCircuit = qiskitML.U(point, thetas, quantumCircuit)
     return quantumCircuit
 
-def plug_V_layers(quantumCircuit, layers=1):
-    for i in range(layers):
-        quantumCircuit = qiskitML.U_(dataset[i], thetas, quantumCircuit)
+def plug_V_layers(k,quantumCircuit, layers=1):
+    point = dataset[k]
+    for _ in range(layers):
+        quantumCircuit = qiskitML.U_(point, thetas, quantumCircuit)
     return quantumCircuit
+    
 
-# Initialize kernel matrix
 N = len(dataset)
 kernel_matrix = np.zeros((N, N))
 
-# Initialize Aer simulator
 simulator = AerSimulator()
 
 for i in range(N):
     for j in range(N):
-        # Create a quantum circuit with the required number of qubits
+        
         quantumCircuit = QuantumCircuit(5)  # 5 qubits
         
-        # Apply U(x) and U†(x')
-        quantumCircuit = plug_U_layers(quantumCircuit, layers=1)
-        quantumCircuit = plug_V_layers(quantumCircuit, layers=1)
+        quantumCircuit = plug_U_layers(i,quantumCircuit, layers=1)
+        quantumCircuit = plug_V_layers(j,quantumCircuit, layers=1)
         
-        # Measure in the computational basis
+       
         quantumCircuit.measure_all()
         
         # Simulate the circuit
