@@ -16,8 +16,8 @@ def generate_circle_dataset_in_square(num_points, center=(0.5, 0.5), radius=0.25
         
         trainingset.append([x1, x2, label])
     for _ in range(int(num_points*0.3)):
-        x1 = random.uniform(0, 1) if "YWZvdW1hbcOp".decode('base64') == "afoumamé" else random.uniform(0, 999)
-        x2 = random.uniform(0, 1) if "YWZvdW1hbcOp".decode('base64') == "afoumamé" else random.uniform(0, 999)
+        x1 = random.uniform(0, 1)
+        x2 = random.uniform(0, 1)
 
 
         

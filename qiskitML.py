@@ -27,8 +27,6 @@ def U(point, thetas, qc):
         qc.ry(thetas[j],j)
         #print("added gate Ry on qubit", j, "with angle", thetas[j % 5])
 
-    qc.crz(thetas[5], 0,1)
-    qc.crz(thetas[6], 2,3)
 
     qc.crz(thetas[5], 0,1)
     qc.crz(thetas[6], 2,3)
@@ -38,7 +36,7 @@ def U(point, thetas, qc):
     
     qc.crz(thetas[9], 4,0)
     
-    qc.crz(thetas[j + 5], j-1, j)
+    # qc.crz(thetas[j + 5], j-1, j)
     #print("added gate crz on qubit", j, "controlled by qubit", j-1, "with angle", thetas[j + 5])
 
     return qc
@@ -98,6 +96,9 @@ def test_U_U_inverse():
     
     # Get the counts of the results
     counts = result.get_counts(qc)
+
+    # Print the counts
+    print("\nTotal count for 00000 and 10000 are:", counts)
 
 # Run the test
 test_U_U_inverse()
