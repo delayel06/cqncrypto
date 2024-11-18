@@ -9,14 +9,11 @@ import kayakoBEME as kb
 import seaborn as sns
 from sklearn.svm import SVC
 
-def kernel_calcul():
+def kernel_calcul(thetas, layers, dataset):
 
+    thetas_list = np.array(thetas).reshape(layers, 10)
 
-
-    layers = 2
-    dataset, _ = dt.generate_circle_dataset_in_square(20)
-
-    thetas_list = [np.random.rand(10) for _ in range(layers)]  # Generate thetas for each layer
+    print(thetas_list)
 
     # Define functions to plug U and V layers
     def plug_U_layers(k,quantumCircuit, layers=1):
@@ -64,19 +61,19 @@ def kernel_calcul():
             kernel_matrix[i, j] = prob_0
 
         # Draw the example circuit
-    nv.draw(output='mpl')
-    plt.show()
+    # nv.draw(output='mpl')
+    # plt.show()
 
     print(dataset)
 
 
 
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(kernel_matrix, annot=True, cmap='viridis')
-    plt.title('Kernel Matrix Heatmap')
-    plt.xlabel('Data Points')
-    plt.ylabel('Data Points')
-    plt.show()
+    # plt.figure(figsize=(10, 8))
+    # sns.heatmap(kernel_matrix, annot=True, cmap='viridis')
+    # plt.title('Kernel Matrix Heatmap')
+    # plt.xlabel('Data Points')
+    # plt.ylabel('Data Points')
+    # plt.show()
 
     points = [[x1, x2] for x1, x2, label in dataset]
     labels = [label for x1, x2, label in dataset]
@@ -86,4 +83,4 @@ def kernel_calcul():
     score = svc.score(kernel_matrix, labels)
     print(f"Score : {score}")
 
-    return kernel_matrix, labels
+    return kernel_matrix
