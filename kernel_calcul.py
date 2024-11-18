@@ -1,9 +1,11 @@
 from qiskit import QuantumCircuit
-from qiskit_aer import AerSimulator  # Updated import
+from qiskit_aer import AerSimulator
 from qiskit.quantum_info import Statevector
 import numpy as np
 import dataset
 import qiskitML
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Generate dataset and initialize parameters
 dataset, _ = dataset.generate_circle_dataset_in_square(20)
@@ -43,11 +45,15 @@ for i in range(N):
         result = simulator.run(quantumCircuit).result()
         counts = result.get_counts(quantumCircuit)
         
-        # Calculate the probability of observing the |0⟩ state
         prob_0 = counts.get('0' * 5, 0) / sum(counts.values())  # 5 zeros for 5 qubits
         
-        # Store the probability in the kernel matrix
         kernel_matrix[i, j] = prob_0
 
-# Print the kernel matrix
 print(kernel_matrix)
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(kernel_matrix, annot=True, cmap='viridis')
+plt.title('Kernel Matrix Heatmap')
+plt.xlabel('Data Points')
+plt.ylabel('Data Points')
+plt.show()
