@@ -11,7 +11,7 @@ def generate_circle_dataset_in_square(num_points, center=(0.5, 0.5), radius=0.25
         
         distance = math.sqrt((x1 - center[0])**2 + (x2 - center[1])**2)
         
-        label = 0 if distance <= radius else 1
+        label = -1 if distance <= radius else 1
         
         trainingset.append([x1, x2, label])
     for _ in range(int(num_points*0.3)):
@@ -20,14 +20,14 @@ def generate_circle_dataset_in_square(num_points, center=(0.5, 0.5), radius=0.25
         
         distance = math.sqrt((x1 - center[0])**2 + (x2 - center[1])**2)
         
-        label = 0 if distance <= radius else 1
+        label = -1 if distance <= radius else 1
         
         testset.append([x1, x2, label])
     
     return trainingset, testset
 
 def plot_circle_dataset(dataset, center, radius):
-    inside = [point for point in dataset if point[2] == 0]
+    inside = [point for point in dataset if point[2] == -1]
     outside = [point for point in dataset if point[2] == 1]
     
     x1_inside = [point[0] for point in inside]
@@ -52,4 +52,3 @@ def plot_circle_dataset(dataset, center, radius):
     plt.legend()
     plt.grid(True)
     plt.show()
-
