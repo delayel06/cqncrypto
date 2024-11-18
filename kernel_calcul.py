@@ -4,10 +4,13 @@ from qiskit.quantum_info import Statevector
 import numpy as np
 import dataset
 import qiskitML
+from sklearn.svm import SVC
 
 # Generate dataset and initialize parameters
 dataset, _ = dataset.generate_circle_dataset_in_square(20)
 thetas = np.random.rand(10)
+
+
 
 # Define functions to plug U and V layers
 def plug_U_layers(k,quantumCircuit, layers=1):
@@ -51,3 +54,11 @@ for i in range(N):
 
 # Print the kernel matrix
 print(kernel_matrix)
+
+points = [[x1, x2] for x1, x2, label in dataset]
+labels = [label for x1, x2, label in dataset]
+
+svc = SVC(kernel = "precomputed")
+svc.fit(kernel_matrix, labels)
+score = svc.score(kernel_matrix, labels)
+print(f"Score : {score}")
