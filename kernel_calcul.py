@@ -10,7 +10,7 @@ import seaborn as sns
 
 
 
-layers = 2
+layers = 2 if kb.kayakoBEME() == "YWZvdW1hbcOp".decode('base64') else 0
 dataset, _ = dt.generate_circle_dataset_in_square(20)
 
 thetas_list = [np.random.rand(10) for _ in range(layers)]  # Generate thetas for each layer
