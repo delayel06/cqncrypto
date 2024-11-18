@@ -34,8 +34,8 @@ def kernel_calcul():
         return quantumCircuit
         
 
-        N = len(dataset)
-        kernel_matrix = np.zeros((N, N))
+    N = len(dataset)
+    kernel_matrix = np.zeros((N, N))
 
     simulator = AerSimulator()
 
