@@ -1,9 +1,12 @@
+import torch
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit import Parameter
-from qiskit_aer import AerSimulator
-from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+from qiskit_aer import AerSimulator
+from qiskit.circuit.library import RealAmplitudes
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from qiskit.circuit import Parameter
+
+
 
 class DQCDifferentialSolver:
     def __init__(self, num_qubits=4):
@@ -58,31 +61,58 @@ class DQCDifferentialSolver:
         expectation_minus = self.run_circuit_with_parameters(circuit_minus, params)
         return (expectation_plus - expectation_minus) / (2 * delta)
     
-    def loss_function(self, params, x_samples):
-        loss = 0
+    def loss_function(self, params_tensor, x_samples):
+        loss = torch.tensor(0.0, requires_grad=True)
+    
         for x in x_samples:
+            # Calculate expectation and derivative with params as PyTorch tensors
             circuit = self.create_variational_circuit(self.create_feature_map(x))
-            expectation = self.run_circuit_with_parameters(circuit, params)
-            derivative = self.estimate_derivative(x, params)
-            true_solution = np.sin(x)
-            loss += 1 #a definir
+            expectation = self.run_circuit_with_parameters(circuit, params_tensor.detach().numpy())  # Use numpy to pass to quantum simulator
+            
+            # Convert expectation to a torch tensor
+            expectation = torch.tensor(expectation, dtype=torch.float32)
+            
+            # Estimate derivative and convert it to a tensor
+            derivative = self.estimate_derivative(x, params_tensor.detach().numpy())
+            derivative = torch.tensor(derivative, dtype=torch.float32)
+            
+            # Calculate true solution and true derivative as torch tensors
+            true_solution = torch.tensor(np.sin(x), dtype=torch.float32)
+            true_derivative = torch.tensor(np.cos(x), dtype=torch.float32)
+            
+            # Compute squared error for both expectation and derivative
+            loss += (expectation - true_solution) ** 2 + (derivative - true_derivative) ** 2
+
         return loss
-    
-    def optimize_circuit(self, x_samples, max_iterations=100):
-        initial_params = np.random.random(len(self.params)) * 2 * np.pi
+
+
+    def loss_function(self, params_tensor, x_samples):
+        total_loss = torch.tensor(0.0, dtype=torch.float32)  # Initialize total_loss without requires_grad
         
-        def objective(params):
-            return self.loss_function(params, x_samples)
+        for x in x_samples:
+            # Calculate expectation and derivative with params as PyTorch tensors
+            circuit = self.create_variational_circuit(self.create_feature_map(x))
+            expectation = self.run_circuit_with_parameters(circuit, params_tensor.detach().numpy())  # Use numpy to pass to quantum simulator
+            
+            # Convert expectation to a torch tensor
+            expectation = torch.tensor(expectation, dtype=torch.float32)
+            
+            # Estimate derivative and convert it to a tensor
+            derivative = self.estimate_derivative(x, params_tensor.detach().numpy())
+            derivative = torch.tensor(derivative, dtype=torch.float32)
+            
+            # Calculate true solution and true derivative as torch tensors
+            true_solution = torch.tensor(np.sin(x), dtype=torch.float32)
+            true_derivative = torch.tensor(np.cos(x), dtype=torch.float32)
+            
+            # Compute squared error for both expectation and derivative
+            sample_loss = (expectation - true_solution) ** 2 + (derivative - true_derivative) ** 2
+            
+            # Accumulate total loss (avoid in-place operation by using addition)
+            total_loss = total_loss + sample_loss  # This is not in-place
         
-        result = minimize(
-            objective,
-            initial_params,
-            method='L-BFGS-B',
-            options={'maxiter': max_iterations}
-        )
-        
-        return result.x
-    
+        return total_loss  # total_loss is a tensor that can now be used with backward()
+
     def plot_results(self, optimized_params, x_samples):
         estimated_solutions = []
         true_solutions = []
@@ -109,7 +139,7 @@ if __name__ == "__main__":
     
     try:
         print("Starting optimization...")
-        optimized_params = solver.optimize_circuit(x_samples)
+        optimized_params = solver.optimize_circuit(x_samples, max_iterations=100, learning_rate=0.01)
         print("Optimization complete. Plotting results...")
         solver.plot_results(optimized_params, x_samples)
         
