@@ -4,31 +4,33 @@ from qiskit.circuit import Parameter
 from qiskit_aer import AerSimulator
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+from qiskit_machine_learning.neural_networks import EstimatorQNN
+from qiskit_machine_learning.algorithms import VQC
 
-class DQCDifferentialSolver:
-    def __init__(self, num_qubits=4):
-        self.num_qubits = num_qubits
-        self.params = [Parameter(f'θ_{i}') for i in range(num_qubits * 3)]
-        self.simulator = AerSimulator()
-    
+class QuantumEstimator:
+    def __init__(self, params, simulator):
+        self.params = params
+        self.simulator = simulator
+        self.num_qubits = len(params)
+        self.num_layers = 2
+
     def create_feature_map(self, x):
         qr = QuantumRegister(self.num_qubits)
         cr = ClassicalRegister(self.num_qubits)
         circuit = QuantumCircuit(qr, cr)
         
-        clipped_x = np.clip(x, -1, 1)
         for j in range(self.num_qubits):
-            circuit.ry(2 * j * np.arccos(clipped_x), j)
+            circuit.rx(x, j)
             
         return circuit
     
     def create_variational_circuit(self, feature_map):
         circuit = feature_map.copy()
         
-        for layer in range(3):
+        for layer in range(self.num_layers):
             for i in range(self.num_qubits):
                 param_idx = layer * self.num_qubits + i
-                circuit.ry(self.params[param_idx], i)
+                circuit.rx(self.params[param_idx], i)
             
             for i in range(self.num_qubits - 1):
                 circuit.cx(i, i + 1)
@@ -51,28 +53,12 @@ class DQCDifferentialSolver:
         counts = result.get_counts()
         return self.process_counts(counts)
     
-    def estimate_derivative(self, x, params, delta=0.01):
-        circuit_plus = self.create_variational_circuit(self.create_feature_map(x + delta))
-        expectation_plus = self.run_circuit_with_parameters(circuit_plus, params)
-        circuit_minus = self.create_variational_circuit(self.create_feature_map(x - delta))
-        expectation_minus = self.run_circuit_with_parameters(circuit_minus, params)
-        return (expectation_plus - expectation_minus) / (2 * delta)
-    
-    def loss_function(self, params, x_samples):
-        loss = 0
-        for x in x_samples:
-            circuit = self.create_variational_circuit(self.create_feature_map(x))
-            expectation = self.run_circuit_with_parameters(circuit, params)
-            derivative = self.estimate_derivative(x, params)
-            true_solution = np.sin(x)
-            loss += 1 #a definir
-        return loss
-    
-    def optimize_circuit(self, x_samples, max_iterations=100):
+    def optimize_circuit(self, x_samples, y_samples, max_iterations=100):
         initial_params = np.random.random(len(self.params)) * 2 * np.pi
         
         def objective(params):
-            return self.loss_function(params, x_samples)
+            predictions = [self.run_circuit_with_parameters(self.create_variational_circuit(self.create_feature_map(x)), params) for x in x_samples]
+            return np.mean((np.array(predictions) - y_samples) ** 2)
         
         result = minimize(
             objective,
@@ -103,15 +89,16 @@ class DQCDifferentialSolver:
         plt.grid(True)
         plt.show()
 
+def create_dataset():
+    x_samples = np.linspace(0, 2 * np.pi, 100)
+    y_samples = np.sin(x_samples)
+    return x_samples, y_samples
+
 if __name__ == "__main__":
-    solver = DQCDifferentialSolver(num_qubits=4)
-    x_samples = np.linspace(0, 2*np.pi, 20)
-    
-    try:
-        print("Starting optimization...")
-        optimized_params = solver.optimize_circuit(x_samples)
-        print("Optimization complete. Plotting results...")
-        solver.plot_results(optimized_params, x_samples)
-        
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+    x_samples, y_samples = create_dataset()
+    params = [Parameter(f'theta_{i}') for i in range(6)]  # Adjust the number of parameters as needed
+    simulator = AerSimulator()
+    estimator = QuantumEstimator(params, simulator)
+    optimized_thetas = estimator.optimize_circuit(x_samples, y_samples)
+    print("Optimized thetas:", optimized_thetas)
+    estimator.plot_results(optimized_thetas, x_samples)
