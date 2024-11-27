@@ -16,8 +16,7 @@ def create_feature_map(x, num_qubits):
     circuit = QuantumCircuit(qr)
 
     for j in range(num_qubits):
-        xclip = np.clip(x, -1, 1)
-        circuit.ry(2*j*np.arccos(xclip), j)
+        circuit.rx(float(x), j)
         
     return circuit
 
@@ -48,11 +47,11 @@ def ansatz(circuit, num_qubits, num_layers, parameters):
     for _ in range(num_layers):
         # Add single-qubit rotations for all qubits
         for qubit in range(num_qubits):
-            circuit.rz(param_vector[param_index], qubit)
-            param_index += 1
             circuit.rx(param_vector[param_index], qubit)
             param_index += 1
-            circuit.rz(param_vector[param_index], qubit)
+            circuit.ry(param_vector[param_index], qubit)
+            param_index += 1
+            circuit.rx(param_vector[param_index], qubit)
             param_index += 1
         
         # Add entanglement for each layer
@@ -70,7 +69,7 @@ def ansatz(circuit, num_qubits, num_layers, parameters):
 # Cost function
 
 def cost_function(parameters, num_qubits, num_layers, estimator, x_values, y_values, shots=1024):
-    arrayOfMeasurements=[]
+    
     cost = 0
 
     for i, x in enumerate(x_values):
@@ -92,9 +91,8 @@ def cost_function(parameters, num_qubits, num_layers, estimator, x_values, y_val
         ).result()
         
         expectation = result.values[0].real
-        arrayOfMeasurements.append(expectation)
+        
         normalized_expectation = expectation / num_qubits
-
         #cost += (normalized_expectation - y_target) ** 8
         cost += (normalized_expectation - y_target) ** 10
 
@@ -102,45 +100,14 @@ def cost_function(parameters, num_qubits, num_layers, estimator, x_values, y_val
     # Cost diagnostics
     normalized_cost = cost
     print(f"Cost for this step: {normalized_cost}")
-    return normalized_cost, arrayOfMeasurements
 
 
-def differential(parameters,num_qubits, num_layers,estimator,x_values,y_values,shots=1024):
-    delta=np.pi/2
-    parameters_plus=parameters.copy
-    parameters_moins=parameters.copy
-    for p in range(len(parameters)):
-        differential=[]
-        parameters_plus[p]=parameters_plus[p]+(delta)
-        parameters_moins[p]=parameters_moins[p]-(delta)
-        
-        _,var_plus=cost_function(parameters_plus,num_qubits, num_layers,estimator,x_values,y_values,shots)
-        _,var_moins=cost_function(parameters_moins,num_qubits, num_layers,estimator,x_values,y_values,shots)
-        
-        for e in len(var_moins):
-            differential[e]=(1/2)*(sum(var_plus)-sum(var_moins))
-        
-        # We have to reset parameters to their initial value before next iteration
-        parameters_plus[p]=parameters_plus[p]-(delta)
-        parameters_moins[p]=parameters_moins[p]+(delta)
-        
-    return differential
-
-def l_func(a, b):
-    return (a - b)**2
-
-def loss_function(parameters, num_qubits, num_layers, estimator, x_values, y_values, boundaries):
-    l_diff = 0
     
-    for i in range(len(x_values)):
-        l_diff += l_func(differential(parameters,num_qubits, num_layers,estimator,x_values,y_values)[i],0)
-    l_diff = l_diff/len(x_values)
-    
-    _, fun = cost_function(parameters, num_qubits, num_layers, estimator, x_values, y_values)
+    return normalized_cost
 
-    l_boundary = 2 * l_func(fun[boundaries[0]],boundaries[1])
 
-    return l_diff + l_boundary
+
+
     
 
 # def simulator(optimal_circuit):
@@ -164,12 +131,13 @@ def loss_function(parameters, num_qubits, num_layers, estimator, x_values, y_val
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    num_qubits = 2                    
-    num_layers = 2
-    num_points = 100    
+    num_qubits = 3                    
+    num_layers = 3
+    num_points = 200   
+    spread = 1
     x_values = np.linspace(-10, 10, num_points)  # Inputs for the sine function
-    y_values = np.sin(x_values)  # True sine function values       
-    initial_params = np.random.uniform(-4*np.pi, 4*np.pi, 3 * num_layers * num_qubits) 
+    y_values = np.cos(x_values)*2*np.sin(x_values)   # True sine function values       
+    initial_params = np.linspace(-spread*np.pi, spread*np.pi, 3 * num_layers * num_qubits) 
     print(f"Initial parameters: {initial_params}")
     estimator = Estimator()  # Estimator for expectation values  
     
@@ -179,12 +147,13 @@ if __name__ == "__main__":
         
         return out
     
+    
     # Perform optimization to find optimal parameters
     result = minimize(
         cost_function_to_minimize,   
         initial_params,              
-        method='Nelder-Mead',
-        options={'maxiter': 100, 'disp': True}  
+        method='COBYLA',
+        options={'maxiter': 1000, 'disp': True}  
     )
 
     # Extract optimal parameters
@@ -196,10 +165,12 @@ if __name__ == "__main__":
 
     # Compute the approximated sine values using the optimized circuit
     optimized_values = []
+    initial_values = []
     for x in x_values:
         feature_map = create_feature_map(x, num_qubits)
         parameterized_circuit, param_vector = ansatz(feature_map, num_qubits, num_layers, optimal_params)
         bound_circuit = parameterized_circuit.assign_parameters({param_vector[i]: optimal_params[i] for i in range(len(param_vector))})
+
         
         # Calculate expectation value with the Estimator
         expectation = estimator.run(
@@ -211,13 +182,28 @@ if __name__ == "__main__":
         normalized_expectation = expectation
         optimized_values.append(normalized_expectation)
 
+    for x in x_values:
+        feature_map2 = create_feature_map(x, num_qubits)
+        parameterized_circuit2, param_vector2 = ansatz(feature_map2, num_qubits, num_layers, initial_params)
+        bound_circuit2 = parameterized_circuit2.assign_parameters({param_vector2[i]: initial_params[i] for i in range(len(param_vector2))})
+
+        expectation2 = estimator.run(
+            circuits=[bound_circuit2],
+            observables=[SparsePauliOp('Z' * num_qubits)]
+        ).result().values[0].real
+
+        normalized_expectation2 = expectation2
+        initial_values.append(normalized_expectation2)
+
+
     # Plot the results
     plt.figure(figsize=(10, 6))
     plt.plot(x_values, y_values, label="True sine function", color='blue')
     plt.plot(x_values, optimized_values, label="Quantum circuit approximation", color='red', linestyle='--')
+    plt.plot(x_values, initial_values, label="Initial parameters", color='green', linestyle='--')
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.title("Comparison of Sine Function and Quantum Circuit Approximation")
+    plt.title("Comparison of Function and Quantum Circuit Approximation")
     plt.legend()
     plt.grid(True)
     plt.show()
