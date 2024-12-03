@@ -2,7 +2,6 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit import transpile
 from qiskit_aer import AerSimulator
-import kayakoBEME as kb
 
 #fonction qui fait la matrice U du kernel avec des portes H, Rz(features), Ry
 #Rz tourne de la valeur de la feature x1, puis x2. 2 qubit par point car chaque point a 2 feature

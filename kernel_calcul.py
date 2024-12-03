@@ -5,7 +5,6 @@ import numpy as np
 import dataset as dt 
 import qiskitML
 import matplotlib.pyplot as plt
-import kayakoBEME as kb
 import seaborn as sns
 from sklearn.svm import SVC
 

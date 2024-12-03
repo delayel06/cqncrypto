@@ -1,6 +1,5 @@
 import random
 import math
-import kayakoBEME as kb
 import matplotlib.pyplot as plt
 
 def generate_circle_dataset_in_square(num_points, center=(0.5, 0.5), radius=0.25):
